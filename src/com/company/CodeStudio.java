@@ -99,24 +99,32 @@ class CodeStudio extends JFrame implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    // If a button is pressed
-    public void actionPerformed(ActionEvent e) {
-        String command = e.getActionCommand();
-
-        if(command.equals("Dark Theme")){
-            backColor = new Color(50,50,50);
-            foreColor = new Color(255,255,255);
-
-            textArea.setBackground(backColor);
-            textArea.setForeground(foreColor);
-            textArea.setCaretColor(foreColor);
-        }else if (command.equals(("Light Theme"))){
+    private static void setTheme(boolean b){
+        if (!b) {
             backColor = new Color(255, 255, 255);
             foreColor = new Color(0,0,0);
 
             textArea.setBackground(backColor);
             textArea.setForeground(foreColor);
             textArea.setCaretColor(foreColor);
+        } else {
+            backColor = new Color(50,50,50);
+            foreColor = new Color(255,255,255);
+
+            textArea.setBackground(backColor);
+            textArea.setForeground(foreColor);
+            textArea.setCaretColor(foreColor);
+        }
+    }
+
+    // If a button is pressed
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+
+        if(command.equals("Dark Theme")){
+            setTheme(true);
+        }else if (command.equals(("Light Theme"))){
+            setTheme(false);
         }else if (command.equals("cut")) {
             textArea.cut();
         } else if (command.equals("copy")) {
