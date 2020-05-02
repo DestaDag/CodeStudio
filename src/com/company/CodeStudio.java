@@ -2,15 +2,21 @@
 package com.company;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.awt.event.*;
 import javax.swing.plaf.metal.*;
 
+
 class CodeStudio extends JFrame implements ActionListener {
     // Text component
-    JTextArea textArea;
+    static JTextArea textArea;
     // Frame
     JFrame frame;
+    // Color
+    static Color backColor;
+    static Color foreColor;
+
     // Constructor
     CodeStudio() {
         // Create a frame
@@ -64,12 +70,27 @@ class CodeStudio extends JFrame implements ActionListener {
         copy.addActionListener(this);
         paste.addActionListener(this);
 
+
+        // Set theme
+        JMenu menu2 = new JMenu("Theme");
+
+        JMenuItem lightTheme = new JMenuItem("Light Theme");
+        JMenuItem darkTheme = new JMenuItem("Dark Theme");
+
+        lightTheme.addActionListener(this);
+        darkTheme.addActionListener(this);
+
+        menu2.add(lightTheme);
+        menu2.add(darkTheme);
+
+
         menu1.add(cut);
         menu1.add(copy);
         menu1.add(paste);
 
         menuBar.add(menu);
         menuBar.add(menu1);
+        menuBar.add(menu2);
 
         frame.setJMenuBar(menuBar);
         frame.add(textArea);
@@ -82,7 +103,21 @@ class CodeStudio extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-        if (command.equals("cut")) {
+        if(command.equals("Dark Theme")){
+            backColor = new Color(50,50,50);
+            foreColor = new Color(255,255,255);
+
+            textArea.setBackground(backColor);
+            textArea.setForeground(foreColor);
+            textArea.setCaretColor(foreColor);
+        }else if (command.equals(("Light Theme"))){
+            backColor = new Color(255, 255, 255);
+            foreColor = new Color(0,0,0);
+
+            textArea.setBackground(backColor);
+            textArea.setForeground(foreColor);
+            textArea.setCaretColor(foreColor);
+        }else if (command.equals("cut")) {
             textArea.cut();
         } else if (command.equals("copy")) {
             textArea.copy();
@@ -167,8 +202,6 @@ class CodeStudio extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(frame, "the user cancelled the operation");
         } else if (command.equals("New")) {
             textArea.setText("");
-        } else if (command.equals("close")) {
-            frame.setVisible(false);
         }
     }
 
