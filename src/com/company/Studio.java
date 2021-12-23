@@ -3,6 +3,9 @@ package com.company;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,18 +37,18 @@ public class Studio extends JFrame implements ActionListener {
         find.setName("find");
 
         try {
-            // Set metl look and feel
+            // Set metal look and feel
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 
             // Set theme to ocean
             MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         // Text component
         textArea = new JTextArea();
 
-        // Create a menubar
+        // Create a menu bar
         JMenuBar menuBar = new JMenuBar();
 
         // Create a menu for menu
@@ -93,12 +96,7 @@ public class Studio extends JFrame implements ActionListener {
 
 
         //
-        find.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                findText();
-            }
-        });
+        find.addActionListener(actionEvent -> findText());
 
         menu2.add(lightTheme);
         menu2.add(darkTheme);
@@ -144,42 +142,66 @@ public class Studio extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-        if(command.equals("Dark Theme")){
-            setTheme(true);
-        }else if (command.equals(("Light Theme"))){
-            setTheme(false);
-        }else if (command.equals("cut")) {
-            textArea.cut();
-        } else if (command.equals("copy")) {
-            textArea.copy();
-        } else if (command.equals("paste")) {
-            textArea.paste();
-        } else if (command.equals("Save")) {
-            save();
-        } else if (command.equals("Print")) {
-            try {
-                // print the file
-                textArea.print();
-            } catch (Exception evt) {
-                JOptionPane.showMessageDialog(frame, evt.getMessage());
-            }
-        } else if (command.equals("Open")) {
-            open();
-        } else if (command.equals("New")) {
-            textArea.setText("");
+        switch (command) {
+            case "Dark Theme":
+                setTheme(true);
+                break;
+            case ("Light Theme"):
+                setTheme(false);
+                break;
+            case "cut":
+                textArea.cut();
+                break;
+            case "copy":
+                textArea.copy();
+                break;
+            case "paste":
+                textArea.paste();
+                break;
+            case "Save":
+                save();
+                break;
+            case "Print":
+                try {
+                    // print the file
+                    textArea.print();
+                } catch (Exception evt) {
+                    JOptionPane.showMessageDialog(frame, evt.getMessage());
+                }
+                break;
+            case "Open":
+                open();
+                break;
+            case "New":
+                textArea.setText("");
+                break;
         }
     }
 
     void findText(){
-        String text = find.getText();
-        Pattern pattern = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(textArea.getText());
-        boolean matchfound = matcher.find();
-        if(matchfound){
-            System.out.println("Match Found");
-        }else {
-            System.out.println("Match not Found");
+        try{
+            Highlighter highlighter = textArea.getHighlighter();
+            String text = find.getText();
+            Pattern pattern = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
+            String text1 = textArea.getText();
+            Matcher matcher = pattern.matcher(text);
+            boolean matchfound = matcher.find();
+             int pos = 0;
+             while((pos = text1.indexOf(text, pos)) >= 0) {
+                 highlighter.addHighlight(pos, pos + text.length(),
+                         new DefaultHighlighter.DefaultHighlightPainter(Color.yellow));
+                 pos += text.length();
+             }
+             // redundant
+            if(matchfound){
+                System.out.println("Match Founds");
+            }else {
+                System.out.println("Match not Found");
+            }
+        }catch ( BadLocationException e){
+            e.printStackTrace();
         }
+
     }
 
 
@@ -232,7 +254,8 @@ public class Studio extends JFrame implements ActionListener {
 
             try {
                 // String
-                String s1 = "", sl = "";
+                String s1;
+                StringBuilder sl;
 
                 // File reader
                 FileReader fr = new FileReader(fi);
@@ -241,15 +264,15 @@ public class Studio extends JFrame implements ActionListener {
                 BufferedReader br = new BufferedReader(fr);
 
                 // Initilize sl
-                sl = br.readLine();
+                sl = new StringBuilder(br.readLine());
 
                 // Take the input from the file
                 while ((s1 = br.readLine()) != null) {
-                    sl = sl + "\n" + s1;
+                    sl.append("\n").append(s1);
                 }
 
                 // Set the text
-                textArea.setText(sl);
+                textArea.setText(sl.toString());
             } catch (Exception evt) {
                 JOptionPane.showMessageDialog(frame, evt.getMessage());
             }
